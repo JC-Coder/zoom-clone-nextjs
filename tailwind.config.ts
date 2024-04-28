@@ -28,6 +28,9 @@ const config = {
         },
         sky: {
           1: '#C9DDFF'
+        },
+        orange: {
+          1: '#FF742E'
         }
       },
       backgroundImage: {
