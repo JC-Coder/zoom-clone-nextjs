@@ -1,8 +1,11 @@
 import {
   CallControls,
   CallParticipantsList,
+  CallStatsButton,
+  CallingState,
   PaginatedGridLayout,
-  SpeakerLayout
+  SpeakerLayout,
+  useCallStateHooks
 } from '@stream-io/video-react-sdk';
 import React, { useState } from 'react';
 import { cn } from '../lib/utils';
@@ -14,13 +17,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { LayoutList } from 'lucide-react';
+import { LayoutList, Loader, Users } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import EndCallButton from './EndCallButton';
 
 type CallLayoutType = 'grid' | 'speaker-left' | 'speaker-right';
 
 const MeetingRoom = () => {
+  const searchParams = useSearchParams();
+  const isPersonalRoom = !!searchParams.get('personal');
+  console.log('isPersonalRoom', isPersonalRoom);
   const [layout, setLayout] = useState<CallLayoutType>('speaker-left');
   const [showParticipants, setShowParticipants] = useState(false);
+  const { useCallCallingState } = useCallStateHooks();
+
+  const callingState = useCallCallingState();
+  if (callingState !== CallingState.JOINED) return <Loader />;
 
   const CallLayout = () => {
     switch (layout) {
@@ -48,7 +60,7 @@ const MeetingRoom = () => {
           <CallParticipantsList onClose={() => setShowParticipants(false)} />
         </div>
 
-        <div className="fixed bottom-0 flex w-full items-center justify-center gap-5">
+        <div className="fixed bottom-0 flex w-full items-center justify-center gap-5 flex-wrap">
           <CallControls />
 
           <DropdownMenu>
@@ -62,18 +74,28 @@ const MeetingRoom = () => {
               {['Grid', 'Speaker-Left', 'Speaker-Right'].map((item, index) => (
                 <div key={index}>
                   <DropdownMenuItem
-                  className='cursor-pointer hover:bg-[#4c535b]'
+                    className="cursor-pointer hover:bg-[#4c535b]"
                     onClick={() =>
                       setLayout(item.toLowerCase() as CallLayoutType)
                     }
                   >
                     {item}
                   </DropdownMenuItem>
+                  <DropdownMenuSeparator className="border-dark-1" />
                 </div>
               ))}
-              <DropdownMenuSeparator />
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <CallStatsButton />
+
+          <button onClick={() => setShowParticipants((prev) => !prev)}>
+            <div className="cursor-pointer rounded-2xl bg-[#19232d] px-4 py-2 hover:bg-[#4c535b]">
+              <Users size={20} className="text-white" />
+            </div>
+          </button>
+
+          {!isPersonalRoom && <EndCallButton />}
         </div>
       </div>
     </section>
