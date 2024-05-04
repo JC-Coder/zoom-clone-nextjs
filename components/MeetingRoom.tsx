@@ -8,7 +8,7 @@ import {
   useCallStateHooks
 } from '@stream-io/video-react-sdk';
 import React, { useState } from 'react';
-import { cn } from '../lib/utils';
+import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +18,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { LayoutList, Loader, Users } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
+import {useRouter, useSearchParams} from 'next/navigation';
 import EndCallButton from './EndCallButton';
 
 type CallLayoutType = 'grid' | 'speaker-left' | 'speaker-right';
@@ -30,8 +30,9 @@ const MeetingRoom = () => {
   const [layout, setLayout] = useState<CallLayoutType>('speaker-left');
   const [showParticipants, setShowParticipants] = useState(false);
   const { useCallCallingState } = useCallStateHooks();
-
+  const router = useRouter();
   const callingState = useCallCallingState();
+
   if (callingState !== CallingState.JOINED) return <Loader />;
 
   const CallLayout = () => {
@@ -45,11 +46,12 @@ const MeetingRoom = () => {
     }
   };
 
+
   return (
     <section className="relative h-screen w-full overflow-hidden pt-4">
       <div className="relative flex size-full items-center justify-center">
         <div className="flex size-full max-w-[1000px] items-center">
-          <CallLayout />
+          <CallLayout onLeave={() => router.push('/')} />
         </div>
 
         <div

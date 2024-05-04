@@ -3,6 +3,9 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { useUser } from '@clerk/nextjs';
 import React from 'react';
+import {useGetCallById} from "@/hooks/useGetCallById";
+import {useStreamVideoClient} from "@stream-io/video-react-sdk";
+import {useRouter} from "next/navigation";
 
 const Table = ({
   title,
@@ -26,8 +29,26 @@ const PersonalRoom = () => {
   const meetingId = user?.id;
   const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${meetingId}`;
   const { toast } = useToast();
+  const {call} = useGetCallById(meetingId!)
+    const client = useStreamVideoClient();
+  const router = useRouter();
 
-  const startRoom = async () => {};
+  const startRoom = async () => {
+      if (!client || !user) return;
+
+      if (!call) {
+          const newCall = client.call('default', meetingId!);
+
+          await newCall.getOrCreate({
+              data: {
+                  starts_at: new Date().toISOString()
+              }
+          });
+
+      }
+
+      router.push(`/meeting/${meetingId}?personal=true`);
+  };
 
   return (
     <section className="flex size-full flex-col gap-10 text-white">
@@ -45,8 +66,8 @@ const PersonalRoom = () => {
         </Button>
         <Button
           className="bg-dark-3"
-          onClick={() => {
-            navigator.clipboard.writeText(meetingLink);
+          onClick={async () => {
+            await navigator.clipboard.writeText(meetingLink);
             toast({
               title: 'Meeting Link Copied'
             });

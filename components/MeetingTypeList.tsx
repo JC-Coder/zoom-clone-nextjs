@@ -167,6 +167,30 @@ const MeetingTypeList = () => {
         buttonText="Start Meeting"
         handleClick={createMeeting}
       />
+
+    {/*  join meeting modal */}
+      <MeetingModal
+          isOpen={meetingState === 'isJoiningMeeting'}
+          onClose={() => setMeetingState(undefined)}
+          title="Join Meeting"
+          buttonText="Join Meeting"
+          handleClick={() => {
+            if (!values.link) return toast({ title: 'Enter meeting link' });
+
+            router.push(values.link)
+          }}
+      >
+        <div className="flex flex-col gap-2.5">
+          <input
+              placeholder="Meeting link"
+              type="text"
+              className="border-none bg-dark-3 focus-visible:ring-0 focus-visible:ring-offset-0 outline-none p-2"
+              onChange={(e) =>
+                  setValues({ ...values, link: e.target.value })
+              }
+          />
+        </div>
+      </MeetingModal>
     </section>
   );
 };
