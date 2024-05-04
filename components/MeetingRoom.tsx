@@ -51,7 +51,7 @@ const MeetingRoom = () => {
     <section className="relative h-screen w-full overflow-hidden pt-4">
       <div className="relative flex size-full items-center justify-center">
         <div className="flex size-full max-w-[1000px] items-center">
-          <CallLayout onLeave={() => router.push('/')} />
+          <CallLayout  />
         </div>
 
         <div
@@ -63,7 +63,7 @@ const MeetingRoom = () => {
         </div>
 
         <div className="fixed bottom-0 flex w-full items-center justify-center gap-5 flex-wrap">
-          <CallControls />
+          <CallControls onLeave={() => router.push('/')}/>
 
           <DropdownMenu>
             <div className="flex items-center">
